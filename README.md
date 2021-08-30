@@ -4,6 +4,10 @@ A simple utility to read/write a repository's Git commit to file. Can be used fo
 
 This project contains multiple utilities for use with different languages/frameworks.
 
+## Prerequisites
+
+As this utility relies on Git, the Git toolchain must be installed and be available on your PATH.
+
 ## Structure
 
 Each framework-specific implementation consists of at least two components. Some frameworks may have additional components that makes sense for specifically for the framework they are for.
@@ -24,3 +28,7 @@ git tag                                       // Returns all tags in repository.
 git rev-parse HEAD                            // Returns the full commit ID of the current commit.
 git rev-parse --short HEAD                    // Returns the short commit ID of the current commit.
 ```
+
+## Unity
+
+Include the following compilation flag in Player Prefs: `UNITY_GITUTIL`.
