@@ -1,7 +1,9 @@
 #if UNITY_GITUTIL
+using UnityEngine;
+
 using System;
 using System.Diagnostics;
-using UnityEngine;
+using System.IO;
 
 namespace GitCommitReader
 {
@@ -10,13 +12,52 @@ namespace GitCommitReader
 	/// </summary>
 	public class GitUtility : MonoBehaviour
 	{
+		#region CONSTANTS
+		public const string SNAPSHOT_SUBPATH = "Assets/Resources/GitSnapshot";
+		public const string SNAPSHOT_FILENAME = "git-snapshot.json";
+		#endregion
+
+
+		#region PROPERTIES
+		public static string snapshotPath { get; set; } = Path.Combine(Directory.GetCurrentDirectory(), SNAPSHOT_SUBPATH, SNAPSHOT_FILENAME);
+		#endregion
+
+
 		#region PUBLIC API
-		public static void StartSnapshot()
+		public static void CreateSnapshot()
 		{
 			Log("Creating snapshot of Git repository state...");
 
-			// TODO Capture all values and write to JSON file / scriptable object.
 			Snapshot();
+		}
+
+		public static GitSnapshot LoadSnapshot()
+		{
+			if (File.Exists(snapshotPath))
+			{
+				var json = File.ReadAllText(snapshotPath);
+				return JsonUtility.FromJson<GitSnapshot>(json);
+			}
+			else
+			{
+				LogError($"No Git snapshot exists at directory: {snapshotPath}");
+				return null;
+			}
+		}
+
+		public static bool SaveSnapshot(GitSnapshot snapshot)
+		{
+			try
+			{
+				var json = JsonUtility.ToJson(snapshot);
+				File.WriteAllText(snapshotPath, json);
+				return true;
+			}
+			catch (Exception e)
+			{
+				LogError($"Exception occured while saving snapshot:\n{e}");
+				return false;
+			}
 		}
 		#endregion
 
@@ -36,8 +77,7 @@ namespace GitCommitReader
 					FileName = "git",
 					// TODO Allow for passing in different commands and awaiting/actioning their result.
 					Arguments = "rev-parse HEAD",
-					// TODO Figure out how to determine/inject a directory.
-					WorkingDirectory = @"E:\My Work and Projects\Programming\git-commit-reader-unity\Assets\Submodules\git-commit-reader"
+					WorkingDirectory = Directory.GetCurrentDirectory()
 				}
 			};
 
@@ -45,11 +85,16 @@ namespace GitCommitReader
 
 			string line = process.StandardOutput.ReadToEnd();
 			string err = process.StandardError.ReadToEnd();
+
 			Log(line);
 			LogError(err);
 
 			process.WaitForExit();
 			process.Close();
+
+			// TODO Write result to storage.
+			var snap = new GitSnapshot();
+			SaveSnapshot(snap);
 		}
 
 		static void Log(string text)

@@ -12,7 +12,7 @@ namespace GitCommitReader
 		[MenuItem("Tools/Update Git Info")]
 		public static void UpdateGitInfo()
 		{
-			GitUtility.StartSnapshot();
+			GitUtility.CreateSnapshot();
 		}
 	}
 
@@ -24,7 +24,7 @@ namespace GitCommitReader
 		[PostProcessBuild]
 		public static void ReadWriteCommitInfo()
 		{
-			GitUtility.StartSnapshot();
+			GitUtility.CreateSnapshot();
 		}
 	}
 }
