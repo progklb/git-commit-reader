@@ -29,6 +29,8 @@ git rev-parse HEAD                            // Returns the full commit ID of t
 git rev-parse --short HEAD                    // Returns the short commit ID of the current commit.
 ```
 
-## Unity
+## Framework Variants
 
-Include the following compilation flag in Player Prefs: `UNITY_GITUTIL`.
+See the framework-specific read me:
+
+- [Unity](./Unity/README.md)
