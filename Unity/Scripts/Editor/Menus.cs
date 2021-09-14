@@ -1,7 +1,7 @@
-#if UNITY_GITUTIL
+#if UNITY_GITSNAP
 using UnityEditor;
 
-namespace GitCommitReader
+namespace GitSnaphot.Editor
 {
 	/// <summary>
 	/// Defines a checkmark menu item for controlling whether automatic updates occur on recompilation.

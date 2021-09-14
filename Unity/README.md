@@ -1,4 +1,4 @@
-# Git Commit Reader for Unity
+# Git Snaphot for Unity
 
 ## Structure
 

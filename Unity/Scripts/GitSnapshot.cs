@@ -1,5 +1,5 @@
-#if UNITY_GITUTIL
-namespace GitCommitReader
+#if UNITY_GITSNAP
+namespace GitSnaphot
 {
 	public class GitSnapshot
 	{

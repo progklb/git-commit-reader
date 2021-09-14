@@ -1,12 +1,12 @@
-# Git Commit Reader
+# Git Snaphot
 
-A simple utility to read/write a repository's Git commit to file. Can be used for versioning a build with a Git commit hash.
+A simple utility to read/write the state of a Git repository to file. Can be used for versioning a build with a Git commit hash.
 
 This project contains multiple utilities for use with different languages/frameworks.
 
 ## Prerequisites
 
-As this utility relies on Git, the Git toolchain must be installed and be available on your PATH.
+As this utility relies on Git, the Git toolchain must be installed and be available on your `PATH`.
 
 ## Structure
 
@@ -14,6 +14,7 @@ Each framework-specific implementation consists of at least two components. Some
 
 - **Reader/Writer**: A utility that reads the Git repository's current state and writes the information to file for later access.
 - **Interface**: A class used to expose the current Git state to client code. This is the class you consume.
+- **Other**: There could be other platform/framework-specific tools/code available.
 
 ## Git Commands
 

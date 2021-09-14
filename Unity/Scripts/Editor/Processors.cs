@@ -1,8 +1,8 @@
-#if UNITY_GITUTIL
+#if UNITY_GITSNAP
 using UnityEditor;
 using UnityEditor.Callbacks;
 
-namespace GitCommitReader
+namespace GitSnaphot.Editor
 {
 	/// <summary>
 	/// A set of processors for automating behavior.

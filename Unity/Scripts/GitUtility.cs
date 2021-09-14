@@ -1,11 +1,11 @@
-#if UNITY_GITUTIL
+#if UNITY_GITSNAP
 using UnityEngine;
 
 using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace GitCommitReader
+namespace GitSnaphot
 {
 	/// <summary>
 	/// A utility for creating a snapshot of the current state of the repository.
