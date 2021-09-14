@@ -33,7 +33,7 @@ namespace GitCommitReader
 	/// </summary>
 	public class GitReaderMenu
 	{
-		[MenuItem("Tools/Git Reader/Update Git Info")] 
+		[MenuItem("Tools/Git Reader/Create Snapshot")] 
 		public static void UpdateGitInfo()
 		{
 			GitUtility.CreateSnapshot();

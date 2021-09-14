@@ -33,7 +33,7 @@ namespace GitCommitReader
 
 		public static GitSnapshot LoadSnapshot()
 		{
-			if (File.Exists(snapshotPath))
+			if (Directory.Exists(SNAPSHOT_SUBPATH) && File.Exists(snapshotPath))
 			{
 				var json = File.ReadAllText(snapshotPath);
 				return JsonUtility.FromJson<GitSnapshot>(json);
@@ -49,7 +49,12 @@ namespace GitCommitReader
 		{
 			try
 			{
-				var json = JsonUtility.ToJson(snapshot);
+				if (!Directory.Exists(SNAPSHOT_SUBPATH))
+				{
+					Directory.CreateDirectory(SNAPSHOT_SUBPATH);
+				}
+
+				var json = JsonUtility.ToJson(snapshot, true);
 				File.WriteAllText(snapshotPath, json);
 				return true;
 			}
@@ -68,7 +73,7 @@ namespace GitCommitReader
 			var process = new Process {
 
 				StartInfo = new ProcessStartInfo {
-					
+
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					RedirectStandardError = true,
@@ -96,12 +101,15 @@ namespace GitCommitReader
 			var snap = new GitSnapshot();
 			SaveSnapshot(snap);
 		}
+		#endregion
 
+
+		#region LOGGING
 		static void Log(string text)
 		{
 			if (!string.IsNullOrEmpty(text))
 			{
-				UnityEngine.Debug.Log($"<color=orange>[{nameof(GitUtility)}] {text}</color>");
+				UnityEngine.Debug.Log(CreateLog(text, "orange"));
 			}
 		}
 
@@ -109,9 +117,13 @@ namespace GitCommitReader
 		{
 			if (!string.IsNullOrEmpty(text))
 			{
-				UnityEngine.Debug.LogError($"<color=red>[{nameof(GitUtility)}] {text}</color>");
+				UnityEngine.Debug.LogError(CreateLog($"{text}", "red"));
+				UnityEngine.Debug.LogError(CreateLog($"Current dir: {Directory.GetCurrentDirectory()}", "red"));
 			}
 		}
+
+		static string CreateLog(string text, string color)
+				=> $"<color={color}>[{nameof(GitUtility)}]</color> {text}";
 		#endregion
 	}
 }
