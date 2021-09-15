@@ -5,6 +5,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+using Debug = UnityEngine.Debug;
+
 namespace GitSnaphot
 {
 	/// <summary>
@@ -20,13 +22,14 @@ namespace GitSnaphot
 
 		#region PROPERTIES
 		public static string snapshotPath { get; set; } = Path.Combine(Directory.GetCurrentDirectory(), SNAPSHOT_SUBPATH, SNAPSHOT_FILENAME);
+		public static bool verboseLogging { get; set; } = false;
 		#endregion
 
 
 		#region PUBLIC API
 		public static void CreateSnapshot()
 		{
-			Log("Creating snapshot of Git repository state...");
+			Log("Creating snapshot of Git repository state...", alwaysLog: true);
 
 			Snapshot();
 		}
@@ -64,12 +67,10 @@ namespace GitSnaphot
 				return false;
 			}
 		}
-		#endregion
 
-
-		#region HELPER FUNCTIONS
-		static void Snapshot()
+		public static bool Execute(string cmd, string args, ref string output)
 		{
+
 			var process = new Process {
 
 				StartInfo = new ProcessStartInfo {
@@ -79,9 +80,8 @@ namespace GitSnaphot
 					RedirectStandardError = true,
 					CreateNoWindow = true,
 
-					FileName = "git",
-					// TODO Allow for passing in different commands and awaiting/actioning their result.
-					Arguments = "rev-parse HEAD",
+					FileName = cmd,
+					Arguments = args,
 					WorkingDirectory = Directory.GetCurrentDirectory()
 				}
 			};
@@ -89,27 +89,47 @@ namespace GitSnaphot
 			process.Start();
 
 			string line = process.StandardOutput.ReadToEnd();
-			string err = process.StandardError.ReadToEnd();
+			if (!string.IsNullOrEmpty(line))
+			{
+				Log($"{cmd} {args} > {line}");
+			}
 
-			Log(line);
-			LogError(err);
+			string err = process.StandardError.ReadToEnd();
+			if (!string.IsNullOrEmpty(err))
+			{
+				LogError($"{cmd} {args} > {err}");
+			}
 
 			process.WaitForExit();
 			process.Close();
 
-			// TODO Write result to storage.
+			bool success = string.IsNullOrEmpty(err);
+			output = (success ? line : err).TrimEnd('\n');
+			return success;
+		}
+		#endregion
+
+
+		#region HELPER FUNCTIONS
+		static void Snapshot()
+		{
 			var snap = new GitSnapshot();
+
+			Execute("git", "rev-parse HEAD", ref snap.commitHashLong);
+			Execute("git", "rev-parse --short HEAD", ref snap.commitHashShort);
+			Execute("git", "describe", ref snap.relativeTag);
+
 			SaveSnapshot(snap);
 		}
 		#endregion
 
 
 		#region LOGGING
-		static void Log(string text)
+		static void Log(string text, bool alwaysLog = false)
 		{
-			if (!string.IsNullOrEmpty(text))
+			if (verboseLogging || alwaysLog)
 			{
-				UnityEngine.Debug.Log(CreateLog(text, "orange"));
+				Debug.Log(CreateLog(text, "orange"));
 			}
 		}
 
@@ -117,13 +137,13 @@ namespace GitSnaphot
 		{
 			if (!string.IsNullOrEmpty(text))
 			{
-				UnityEngine.Debug.LogError(CreateLog($"{text}", "red"));
-				UnityEngine.Debug.LogError(CreateLog($"Current dir: {Directory.GetCurrentDirectory()}", "red"));
+				Debug.LogError(CreateLog(text, "red"));
+				Debug.LogError(CreateLog($"Current dir: {Directory.GetCurrentDirectory()}", "red"));
 			}
 		}
 
 		static string CreateLog(string text, string color)
-				=> $"<color={color}>[{nameof(GitUtility)}]</color> {text}";
+			=> $"<color={color}>[{nameof(GitUtility)}]</color> {text}";
 		#endregion
 	}
 }
