@@ -7,6 +7,10 @@ namespace GitSnaphot
 	public static class GitInterface
 	{
 		#region PUBLIC API
+		/// <summary>
+        /// Retrieves the snapshot from storage.
+        /// </summary>
+        /// <returns>The snapshot data model.</returns>
 		public static GitSnapshot GetSnapshot()
 			=> GitUtility.LoadSnapshot();
 		#endregion
